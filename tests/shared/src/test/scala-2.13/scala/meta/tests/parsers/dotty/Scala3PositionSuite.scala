@@ -163,6 +163,8 @@ class Scala3PositionSuite extends BasePositionSuite(dialects.Scala3) {
     """|Enumerator.CaseGenerator case a: TP <- iter
        |Pat.Typed a: TP
        |Enumerator.Guard if cnd
+       |Term.Name do
+       |  echo
        |""".stripMargin
   )
   checkPositions[Stat](
