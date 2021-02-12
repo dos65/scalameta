@@ -29,7 +29,7 @@ class ControlSyntaxSuite extends BaseDottySuite {
   test("old-if-else-single2") {
     val code = """|if (cond)
                   |  fx
-                  |else
+                  |else 
                   |  gx
                   |""".stripMargin
     val output = """|if (cond) fx else gx""".stripMargin
@@ -194,6 +194,46 @@ class ControlSyntaxSuite extends BaseDottySuite {
             Term.Block(List(Term.Name("B1"), Term.Name("B2")))
           )
         )
+      )
+    )
+  }
+
+  test("new-if-indented") {
+    val code = """|if (cond)
+                  |  fx1
+                  |  fx2
+                  |""".stripMargin
+    val output = """|if (cond) {
+                    |  fx1
+                    |  fx2
+                    |}
+                    |""".stripMargin
+    runTestAssert[Stat](code, assertLayout = Some(output))(
+      Term.If(
+        Term.Name("cond"),
+        Term.Block(List(Term.Name("fx1"), Term.Name("fx2"))),
+        Lit.Unit()
+      )
+    )
+  }
+
+  test("new-if-else-indented") {
+    val code = """|if cond
+                  |  fx1
+                  |  fx2
+                  |else
+                  |  gx
+                  |""".stripMargin
+    val output = """|if (cond) {
+                    |  fx1
+                    |  fx2
+                    |} else gx
+                    |""".stripMargin
+    runTestAssert[Stat](code, assertLayout = Some(output))(
+      Term.If(
+        Term.Name("cond"),
+        Term.Block(List(Term.Name("fx1"), Term.Name("fx2"))),
+        Term.Name("gx")
       )
     )
   }

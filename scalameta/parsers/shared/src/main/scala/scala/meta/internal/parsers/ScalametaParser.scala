@@ -2119,7 +2119,8 @@ class ScalametaParser(input: Input)(implicit dialect: Dialect) { parser =>
     val (cond, thenp) = if (token.isNot[LeftParen] && dialect.allowSignificantIndentation) {
       val cond = expr()
       acceptOpt[LF]
-      accept[KwThen]
+      if (!tryAcceptWithOptLF[KwThen])
+        in.observeIndented()
       (cond, exprMaybeIndented())
     } else {
       val forked = in.fork
@@ -2128,8 +2129,10 @@ class ScalametaParser(input: Input)(implicit dialect: Dialect) { parser =>
         in = forked
         cond = expr()
       }
+      cond
       newLinesOpt()
-      acceptOpt[KwThen]
+      if (!tryAcceptWithOptLF[KwThen])
+        in.observeIndented()
       (cond, exprMaybeIndented())
     }
 
